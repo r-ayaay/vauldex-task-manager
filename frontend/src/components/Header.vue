@@ -1,13 +1,13 @@
 <template>
   <header class="flex bg-[#1f1f21] items-center justify-between h-16 px-6 md:px-8 shadow-sm">
     <div class="flex items-center gap-3">
-      <h1 class="text-2xl font-semibold text-white">[Project Name]</h1>
+      <h1 class="text-2xl font-semibold text-white pr-8 border-r">[Project Name]</h1>
 
       <!-- Board dropdown -->
       <div v-if="activeBoard" class="relative" ref="boardDropdownRef">
         <button
           @click="toggleBoardDropdown"
-          class="flex items-center gap-1 text-lg font-medium text-white hover:opacity-80"
+          class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80"
         >
           {{ activeBoard.name }}
           <span>▼</span>
