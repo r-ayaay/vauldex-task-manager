@@ -19,7 +19,11 @@ class BoardService(
         val owner = userRepository.findById(ownerId)
             .orElseThrow { IllegalArgumentException("Owner not found") }
         val board = Board(name = name, owner = owner)
-        return boardRepository.save(board)
+
+        val newBoard = boardRepository.save(board)
+
+        addMember(newBoard.id,ownerId,ownerId)
+        return newBoard
     }
 
     @Transactional

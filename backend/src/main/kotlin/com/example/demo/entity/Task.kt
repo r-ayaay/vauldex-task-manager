@@ -13,7 +13,7 @@ data class Task(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var status: TaskStatus = TaskStatus.NOT_STARTED,
+    var status: TaskStatus = TaskStatus.TO_DO,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_member_id")
