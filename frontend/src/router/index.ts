@@ -6,6 +6,7 @@ import PortfolioView from '../pages/Home.vue'
 // import HistoryView from '../views/History-View.vue'
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
+import Board from '@/pages/Board.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,7 +26,10 @@ const router = createRouter({
     {
       path: '/',
       component: ApplicationLayout,
-      children: [{ path: '', name: 'overview', component: PortfolioView }],
+      children: [
+        { path: '', name: 'overview', component: PortfolioView },
+        { path: 'board/:id', component: Board, name: 'board' },
+      ],
 
       meta: { requiresAuth: true },
     },
