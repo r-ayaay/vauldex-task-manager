@@ -31,7 +31,7 @@ const router = createRouter({
     },
 
     // default redirect
-    { path: '/:pathMatch(.*)*', redirect: '/login' },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
 
