@@ -2,8 +2,10 @@ package com.example.demo.service
 
 import com.example.demo.entity.Board
 import com.example.demo.entity.BoardMember
+import com.example.demo.entity.Task
 import com.example.demo.repository.BoardMemberRepository
 import com.example.demo.repository.BoardRepository
+import com.example.demo.repository.TaskRepository
 import com.example.demo.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 class BoardService(
     private val boardRepository: BoardRepository,
     private val boardMemberRepository: BoardMemberRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val taskRepository: TaskRepository
 ) {
 
     fun createBoard(ownerId: Long, name: String): Board {
@@ -75,4 +78,11 @@ class BoardService(
         val memberBoards = boardRepository.findByMembersUserId(userId)
         return (ownedBoards + memberBoards).distinct()
     }
+
+    fun getTasksForBoard(boardId: Long): List<Task> {
+        val board = boardRepository.findById(boardId)
+            .orElseThrow { IllegalArgumentException("Board not found") }
+        return taskRepository.findAllByBoardId(boardId)
+    }
+
 }

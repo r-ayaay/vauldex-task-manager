@@ -1,9 +1,11 @@
 package com.example.demo.controller
 
 import com.example.demo.dto.BoardDTO
+import com.example.demo.dto.TaskDTO
 import com.example.demo.mapper.toDTO
 import com.example.demo.repository.UserRepository
 import com.example.demo.service.BoardService
+import com.example.demo.service.TaskService
 import com.example.demo.util.JwtUtil
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.*
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/boards")
 class BoardController(
     private val boardService: BoardService,
+    private val taskService: TaskService,
     private val userRepository: UserRepository,
     private val jwtUtil: JwtUtil
 ) {
@@ -71,4 +74,13 @@ class BoardController(
         val user = getCurrentUser(request)
         return boardService.getBoardsForUser(user.id).map { it.toDTO() }
     }
+
+    @GetMapping("/{boardId}/tasks")
+    fun getTasksForBoard(@PathVariable boardId: Long, request: HttpServletRequest): List<TaskDTO> {
+        val user = getCurrentUser(request)
+
+        return boardService.getTasksForBoard(boardId).map { it.toDTO() }
+    }
+
+
 }

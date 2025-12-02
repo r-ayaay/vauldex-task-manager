@@ -18,9 +18,14 @@ fun Task.toDTO(): TaskDTO = TaskDTO(
     id = this.id,
     content = this.content,
     status = this.status.name,
+    creatorId = this.creator.id,
     assignedMemberId = this.assignedMember?.id,
-    creatorId = this.creator.id
+    assignedMemberUsername = this.assignedMember?.username,
+    boardId = this.board.id,
+    boardOwnerId = this.board.owner.id // <-- use 'owner' of the board, not 'creator'
 )
+
+
 
 fun Comment.toDTO(): CommentDTO = CommentDTO(
     id = this.id,

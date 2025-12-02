@@ -10,4 +10,6 @@ interface TaskRepository : JpaRepository<Task, Long> {
     fun findByAssignedMemberId(userId: Long): List<Task>
 
     fun findByCreatorId(userId: Long): List<Task>
+
+    fun findAllByBoardId(boardId: Long): List<Task>
 }
