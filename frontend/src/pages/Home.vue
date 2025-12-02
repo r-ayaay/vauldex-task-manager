@@ -3,7 +3,7 @@
     <!-- Create Board Button -->
     <button
       @click="showModal = true"
-      class="mb-10 px-6 py-3 bg-blue-600 hover:bg-blue-700 transition rounded-xl text-white font-semibold"
+      class="mb-10 px-6 py-3 bg-blue-600 hover:bg-blue-700 transition rounded-xl text-white font-semibold cursor-pointer"
     >
       + Create Board
     </button>
