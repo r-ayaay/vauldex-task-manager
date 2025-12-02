@@ -75,7 +75,7 @@ async function handleRegister() {
     // After registering, log in using your store
     await auth.login(username.value, password.value)
 
-    router.push('/dashboard')
+    router.push('/')
   } catch (err: unknown) {
     if (isAxiosError(err)) {
       error.value = err.response?.data?.message ?? 'Registration failed'

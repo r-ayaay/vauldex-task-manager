@@ -86,7 +86,7 @@ function isAxiosError(err: unknown): err is { response?: { data?: { message?: st
 async function handleLogin() {
   try {
     await auth.login(username.value, password.value)
-    router.push('/dashboard')
+    router.push('/')
   } catch (err: unknown) {
     if (isAxiosError(err)) {
       error.value = err.response?.data?.message ?? 'Login failed'

@@ -1,8 +1,8 @@
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-// import DashboardLayout from '../components/layouts/dashboard-layout.vue'
-// import PortfolioView from '../views/PortfolioView.vue'
+import ApplicationLayout from '../components/layouts/ApplicationLayout.vue'
+import PortfolioView from '../pages/Home.vue'
 // import HistoryView from '../views/History-View.vue'
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
@@ -22,16 +22,13 @@ const router = createRouter({
       component: () => Register,
       meta: { requiresGuest: true },
     },
-    // {
-    //   path: '/dashboard',
-    //   component: DashboardLayout,
-    //   children: [
-    //     { path: '', name: 'overview', component: PortfolioView },
-    //     { path: 'history', name: 'history', component: HistoryView },
-    //   ],
+    {
+      path: '/',
+      component: ApplicationLayout,
+      children: [{ path: '', name: 'overview', component: PortfolioView }],
 
-    //   meta: { requiresAuth: true },
-    // },
+      meta: { requiresAuth: true },
+    },
 
     // default redirect
     { path: '/:pathMatch(.*)*', redirect: '/login' },
