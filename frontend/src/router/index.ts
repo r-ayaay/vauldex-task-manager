@@ -4,8 +4,8 @@ import { useAuthStore } from '../stores/auth'
 // import DashboardLayout from '../components/layouts/dashboard-layout.vue'
 // import PortfolioView from '../views/PortfolioView.vue'
 // import HistoryView from '../views/History-View.vue'
-import Login from '../pages/login.vue'
-import Register from '../pages/register.vue'
+import Login from '../pages/Login.vue'
+import Register from '../pages/Register.vue'
 
 const router = createRouter({
   history: createWebHistory(),
