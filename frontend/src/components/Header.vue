@@ -83,13 +83,19 @@
 
       <div
         v-if="userDropdownOpen"
-        class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-md z-50 min-w-[120px] overflow-hidden"
+        class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-md z-50 min-w-[160px] overflow-hidden"
       >
+        <Button
+          label="Delete Board"
+          @click="showDeleteBoardModal = true"
+          classNames="flex w-full items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-100 transition-colors"
+          v-if="activeBoard && isBoardOwner"
+        />
         <Button
           label="Logout"
           @click="logoutHandler"
           classNames="flex w-full items-center gap-2 px-4 py-2 text-[#1C274C] hover:bg-[#f0f2f8] focus:bg-[#e3e7f3] transition-colors stroke-[#1C274C]"
-        ></Button>
+        />
       </div>
     </div>
 
@@ -153,6 +159,34 @@
         </button>
       </div>
     </div>
+
+    <!-- Delete Board Modal -->
+    <div
+      v-if="showDeleteBoardModal && activeBoard"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
+        <h2 class="text-xl font-semibold mb-4">Delete Board</h2>
+        <p class="mb-6">
+          Are you sure you want to delete <strong>{{ activeBoard.name }}</strong
+          >?
+        </p>
+        <div class="flex justify-end gap-4">
+          <button
+            @click="showDeleteBoardModal = false"
+            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+          >
+            Cancel
+          </button>
+          <button
+            @click="deleteBoard"
+            class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </header>
 </template>
 
@@ -194,6 +228,7 @@ const userDropdownRef = ref<HTMLElement | null>(null)
 const showModal = ref(false)
 const newBoardName = ref('')
 const showMembersModal = ref(false)
+const showDeleteBoardModal = ref(false)
 
 // Members
 const boardMembers = ref<User[]>([])
@@ -242,9 +277,7 @@ async function fetchAllUsers() {
 async function addMember() {
   if (!activeBoard.value || !selectedUserId.value) return
   try {
-    await api.post(`/boards/${activeBoard.value.id}/members`, {
-      memberId: selectedUserId.value,
-    })
+    await api.post(`/boards/${activeBoard.value.id}/members`, { memberId: selectedUserId.value })
     await fetchBoardMembers()
     selectedUserId.value = null
     showMembersModal.value = false
@@ -316,6 +349,19 @@ async function createBoard() {
     boardStore.boards.push(res.data)
     newBoardName.value = ''
     showModal.value = false
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Delete board
+async function deleteBoard() {
+  if (!activeBoard.value) return
+  try {
+    await api.delete(`/boards/${activeBoard.value.id}`)
+    boardStore.boards = boardStore.boards.filter((b) => b.id !== activeBoard.value?.id)
+    showDeleteBoardModal.value = false
+    router.push('/')
   } catch (err) {
     console.error(err)
   }
