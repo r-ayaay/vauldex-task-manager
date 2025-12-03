@@ -18,7 +18,13 @@ class TaskService(
     private val boardMemberRepository: BoardMemberRepository
 ) {
 
-    fun createTask(boardId: Long, creatorId: Long, content: String, assignedMemberId: Long? = null): Task {
+    fun createTask(
+        boardId: Long,
+        creatorId: Long,
+        content: String,
+        assignedMemberId: Long? = null,
+        statusString: String
+    ): Task {
         val board = boardRepository.findById(boardId)
             .orElseThrow { IllegalArgumentException("Board not found") }
 
@@ -32,15 +38,18 @@ class TaskService(
             userRepository.findById(id).orElseThrow { IllegalArgumentException("User not found") }
         }
 
+
         val task = Task(
             content = content,
             assignedMember = assignedMember,
             board = board,
-            creator = creator
+            creator = creator,
+            status = statusString
         )
 
         return taskRepository.save(task)
     }
+
 
     @Transactional
     fun updateTaskContent(taskId: Long, userId: Long, newContent: String): Task {
@@ -56,7 +65,7 @@ class TaskService(
     }
 
     @Transactional
-    fun updateTaskStatus(taskId: Long, userId: Long, status: TaskStatus): Task {
+    fun updateTaskStatus(taskId: Long, userId: Long, status: String): Task {
         val task = taskRepository.findById(taskId)
             .orElseThrow { IllegalArgumentException("Task not found") }
 

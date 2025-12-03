@@ -38,9 +38,12 @@ class TaskController(
     ): TaskDTO {
         val user = getCurrentUser(request)
         val content = body["content"] ?: throw IllegalArgumentException("Task content required")
+        val statusString = body["status"] ?: throw IllegalArgumentException("Task content required")
         val assignedMemberId = body["assignedMemberId"]?.toLong()
-        return taskService.createTask(boardId, user.id, content, assignedMemberId).toDTO()
+
+        return taskService.createTask(boardId, user.id, content, assignedMemberId, statusString).toDTO()
     }
+
 
     @PatchMapping("/{taskId}")
     fun updateTask(
@@ -50,7 +53,7 @@ class TaskController(
     ): TaskDTO {
         val user = getCurrentUser(request)
         val newContent = body["content"]
-        val status = body["status"]?.let { TaskStatus.valueOf(it) }
+        val status = body["status"]
 
         val task = when {
             newContent != null -> taskService.updateTaskContent(taskId, user.id, newContent)

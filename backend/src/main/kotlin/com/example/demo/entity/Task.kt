@@ -11,9 +11,9 @@ data class Task(
     @Column(nullable = false)
     var content: String,
 
-    @Enumerated(EnumType.STRING)
+
     @Column(nullable = false)
-    var status: TaskStatus = TaskStatus.TO_DO,
+    var status: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_member_id")
