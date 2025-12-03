@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import TaskCard from '@/components/TaskCard.vue'
 import AddCardBox from '@/components/AddCardBox.vue'
+import TaskModal from '@/components/ui/modals/TaskModal.vue'
 import api from '@/api/axios'
 import { useAuthStore } from '@/stores/auth'
 
@@ -16,14 +17,20 @@ interface Task {
   boardOwnerId: number
 }
 
+interface User {
+  id: number
+  username: string
+}
+
 const auth = useAuthStore()
 const tasks = ref<Task[]>([])
+const boardMembers = ref<User[]>([])
 const route = useRoute()
 
 // Reactive boardId
 const boardId = computed(() => Number(route.params.id))
 
-// Computed filtered tasks
+// Filtered tasks by status
 const toDoTasks = computed(() => tasks.value.filter((t) => t.status === 'TO_DO'))
 const inProgressTasks = computed(() => tasks.value.filter((t) => t.status === 'IN_PROGRESS'))
 const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'COMPLETED'))
@@ -31,13 +38,14 @@ const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'CO
 // Fetch tasks for the current board
 async function fetchTasks() {
   const id = boardId.value
-  if (!id) return // prevent undefined
+  if (!id) return
   try {
     const res = await api.get(`/boards/${id}/tasks`)
+    console.log('Fetched Tasks:', res.data)
     tasks.value = res.data.map((t: any) => ({
       id: t.id,
       content: t.content,
-      assignedMember: t.assignedMember?.username || 'Unassigned',
+      assignedMember: t.assignedMemberUsername || 'Unassigned',
       status: t.status,
       creatorId: t.creatorId,
       assignedMemberId: t.assignedMemberId,
@@ -48,8 +56,28 @@ async function fetchTasks() {
   }
 }
 
-// Watch boardId and refetch tasks whenever it changes
-watch(boardId, fetchTasks, { immediate: true })
+// Fetch board members
+async function fetchBoardMembers() {
+  const id = boardId.value
+  if (!id) return
+  try {
+    const res = await api.get<User[]>(`/boards/${id}/members`)
+    boardMembers.value = res.data
+    console.log('Board Members:', boardMembers.value)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Watch boardId to refetch tasks and members
+watch(
+  boardId,
+  () => {
+    fetchTasks()
+    fetchBoardMembers()
+  },
+  { immediate: true },
+)
 
 // Determine if current user can edit task status
 function canEdit(task: Task) {
@@ -60,23 +88,27 @@ function canEdit(task: Task) {
 }
 
 // Update task status
-async function updateTaskStatus(taskId: number, newStatus: string) {
+async function updateTaskStatus(taskId: number, newStatus: Task['status']) {
   try {
     await api.patch(`/tasks/${taskId}`, { status: newStatus })
     const task = tasks.value.find((t) => t.id === taskId)
-    if (task) task.status = newStatus as Task['status']
+    if (task) task.status = newStatus
   } catch (err) {
     console.error(err)
   }
 }
 
-// State for adding tasks
-const addingStatus = ref<null | 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED'>(null)
+// Adding task state
+const addingStatus = ref<null | Task['status']>(null)
 const newTaskContent = ref('')
 
 function startAdding(status: Task['status']) {
   addingStatus.value = status
   newTaskContent.value = ''
+}
+
+function cancelAdding() {
+  addingStatus.value = null
 }
 
 // Create a new task
@@ -90,7 +122,6 @@ async function createTask(status: Task['status']) {
       content: newTaskContent.value,
       status,
     })
-
     tasks.value.push({
       id: res.data.id,
       content: res.data.content,
@@ -100,7 +131,6 @@ async function createTask(status: Task['status']) {
       assignedMemberId: res.data.assignedMemberId,
       boardOwnerId: res.data.boardOwnerId,
     })
-
     addingStatus.value = null
     newTaskContent.value = ''
   } catch (err) {
@@ -113,6 +143,22 @@ const inputRef = ref<HTMLInputElement | null>(null)
 watch(addingStatus, async (val) => {
   if (val !== null) (await nextTick(), inputRef.value?.focus())
 })
+
+// Task modal state
+const showTaskModal = ref(false)
+const selectedTask = ref<Task | null>(null)
+
+// Open task modal
+function openTaskModal(task: Task) {
+  selectedTask.value = task
+  showTaskModal.value = true
+}
+
+// Close task modal
+function closeTaskModal() {
+  showTaskModal.value = false
+  selectedTask.value = null
+}
 </script>
 
 <template>
@@ -129,7 +175,8 @@ watch(addingStatus, async (val) => {
           :assignedMember="task.assignedMember"
           :status="task.status"
           :canEditStatus="canEdit(task)"
-          :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus)"
+          :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus as Task['status'])"
+          @click="openTaskModal(task)"
         />
         <AddCardBox
           :status="'TO_DO'"
@@ -137,7 +184,7 @@ watch(addingStatus, async (val) => {
           v-model="newTaskContent"
           :startAdding="startAdding"
           :createTask="createTask"
-          :cancelAdding="() => (addingStatus = null)"
+          :cancelAdding="cancelAdding"
         />
       </div>
     </div>
@@ -154,7 +201,8 @@ watch(addingStatus, async (val) => {
           :assignedMember="task.assignedMember"
           :status="task.status"
           :canEditStatus="canEdit(task)"
-          :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus)"
+          :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus as Task['status'])"
+          @click="openTaskModal(task)"
         />
         <AddCardBox
           :status="'IN_PROGRESS'"
@@ -162,7 +210,7 @@ watch(addingStatus, async (val) => {
           v-model="newTaskContent"
           :startAdding="startAdding"
           :createTask="createTask"
-          :cancelAdding="() => (addingStatus = null)"
+          :cancelAdding="cancelAdding"
         />
       </div>
     </div>
@@ -179,7 +227,8 @@ watch(addingStatus, async (val) => {
           :assignedMember="task.assignedMember"
           :status="task.status"
           :canEditStatus="canEdit(task)"
-          :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus)"
+          :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus as Task['status'])"
+          @click="openTaskModal(task)"
         />
         <AddCardBox
           :status="'COMPLETED'"
@@ -187,9 +236,18 @@ watch(addingStatus, async (val) => {
           v-model="newTaskContent"
           :startAdding="startAdding"
           :createTask="createTask"
-          :cancelAdding="() => (addingStatus = null)"
+          :cancelAdding="cancelAdding"
         />
       </div>
     </div>
+
+    <!-- Task Modal -->
+    <TaskModal
+      v-if="showTaskModal && selectedTask"
+      :task="selectedTask"
+      :can-edit-status="selectedTask ? canEdit(selectedTask) : false"
+      :board-members="boardMembers"
+      @close="closeTaskModal"
+    />
   </div>
 </template>
