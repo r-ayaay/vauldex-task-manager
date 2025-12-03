@@ -7,7 +7,7 @@
       <div v-if="activeBoard" class="relative" ref="boardDropdownRef">
         <button
           @click="toggleBoardDropdown"
-          class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80"
+          class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80 cursor-pointer"
         >
           {{ activeBoard.name }}
           <span>▼</span>
