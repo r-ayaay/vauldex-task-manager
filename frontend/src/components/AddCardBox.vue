@@ -28,7 +28,7 @@ watch(
 
 <template>
   <div
-    class="w-full bg-[#232529] p-4 rounded-xl shadow-lg border-gray-600 cursor-pointer hover:scale-103 transition-all"
+    class="w-full bg-[#232529] p-4 rounded-xl shadow-lg border-gray-600 cursor-pointer hover:scale-103 hover:outline-solid transition-all"
   >
     <div
       v-if="props.addingStatus !== props.status"
