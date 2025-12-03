@@ -31,4 +31,8 @@ class UserService(
 
         return UserResponse(user.id, user.username)
     }
+
+    fun getUsersNotInBoard(boardId: Long): List<User> {
+        return userRepository.findUsersNotInBoard(boardId)
+    }
 }
