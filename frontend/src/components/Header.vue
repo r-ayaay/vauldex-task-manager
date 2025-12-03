@@ -5,6 +5,11 @@
         <h1 class="text-2xl font-semibold text-white pr-8 cursor-pointer">TaskMan</h1>
       </router-link>
 
+      <!-- Rename Board Button -->
+      <div v-if="activeBoard && isBoardOwner" class="cursor-pointer" @click="openRenameModal">
+        <PenIcon />
+      </div>
+
       <!-- Board dropdown -->
       <div v-if="activeBoard" class="relative" ref="boardDropdownRef">
         <button
@@ -53,7 +58,6 @@
           v-if="membersDropdownOpen"
           class="absolute left-0 mt-2 bg-white text-black rounded-md shadow-md w-48 z-50 overflow-hidden"
         >
-          <!-- Add member button only for owner -->
           <div
             v-if="isBoardOwner"
             @click="openAddMemberModal"
@@ -129,6 +133,36 @@
       </div>
     </div>
 
+    <!-- Rename Board Modal -->
+    <div
+      v-if="showRenameModal && activeBoard"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
+        <h2 class="text-xl font-semibold mb-4">Rename Board</h2>
+        <input
+          v-model="renameBoardName"
+          type="text"
+          placeholder="New board name"
+          class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white mb-4 outline-none"
+        />
+        <div class="flex justify-end gap-4">
+          <button
+            @click="showRenameModal = false"
+            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+          >
+            Cancel
+          </button>
+          <button
+            @click="renameBoard"
+            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Rename
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Member Modal -->
     <div
       v-if="showMembersModal"
@@ -199,6 +233,7 @@ import { useBoardStore } from '@/stores/boards'
 import api from '@/api/axios'
 
 import DownArrow from '@/components/ui/icons/down-arrow.vue'
+import PenIcon from './ui/icons/pen-icon.vue'
 
 interface Board {
   id: number
@@ -216,7 +251,7 @@ const router = useRouter()
 const route = useRoute()
 const props = defineProps<{ username: string; onLogout: () => void }>()
 
-// Dropdown state
+// Dropdowns
 const boardDropdownOpen = ref(false)
 const boardDropdownRef = ref<HTMLElement | null>(null)
 const membersDropdownOpen = ref(false)
@@ -226,9 +261,11 @@ const userDropdownRef = ref<HTMLElement | null>(null)
 
 // Modals
 const showModal = ref(false)
-const newBoardName = ref('')
+const showRenameModal = ref(false)
 const showMembersModal = ref(false)
 const showDeleteBoardModal = ref(false)
+const newBoardName = ref('')
+const renameBoardName = ref('')
 
 // Members
 const boardMembers = ref<User[]>([])
@@ -236,20 +273,15 @@ const allUsers = ref<User[]>([])
 const selectedUserId = ref<number | null>(null)
 
 // Active board
-const activeBoard = computed(() => {
-  if (route.name !== 'board') return null
-  return boardStore.getById(Number(route.params.id))
-})
-
-// Owner check
+const activeBoard = computed(() =>
+  route.name === 'board' ? boardStore.getById(Number(route.params.id)) : null,
+)
 const isBoardOwner = computed(() => auth.user?.id === activeBoard.value?.ownerId)
-
-// Other boards
 const otherBoards = computed(() =>
   boardStore.boards.filter((b) => !activeBoard.value || b.id !== activeBoard.value.id),
 )
 
-// Fetch members
+// Functions
 async function fetchBoardMembers() {
   if (!activeBoard.value) return
   try {
@@ -259,8 +291,6 @@ async function fetchBoardMembers() {
     console.error(err)
   }
 }
-
-// Fetch all users for adding
 async function fetchAllUsers() {
   if (!activeBoard.value) return
   try {
@@ -272,8 +302,6 @@ async function fetchAllUsers() {
     console.error(err)
   }
 }
-
-// Add member
 async function addMember() {
   if (!activeBoard.value || !selectedUserId.value) return
   try {
@@ -285,14 +313,13 @@ async function addMember() {
     console.error(err)
   }
 }
-
-// Open add member modal
 function openAddMemberModal() {
   showMembersModal.value = true
   membersDropdownOpen.value = false
 }
-
-// Dropdown toggles
+function openRenameModal() {
+  showRenameModal.value = true
+}
 function toggleBoardDropdown() {
   boardDropdownOpen.value = !boardDropdownOpen.value
 }
@@ -302,20 +329,14 @@ function toggleMembersDropdown() {
 function toggleUserDropdown() {
   userDropdownOpen.value = !userDropdownOpen.value
 }
-
-// Select board
 function selectBoard(id: number) {
   boardDropdownOpen.value = false
   router.push(`/board/${id}`)
 }
-
-// Logout
 function logoutHandler() {
   userDropdownOpen.value = false
   props.onLogout()
 }
-
-// Handle outside click
 function handleClickOutside(e: MouseEvent) {
   if (boardDropdownRef.value && !boardDropdownRef.value.contains(e.target as Node))
     boardDropdownOpen.value = false
@@ -325,23 +346,23 @@ function handleClickOutside(e: MouseEvent) {
     userDropdownOpen.value = false
 }
 
+// Lifecycle
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside)
   boardStore.fetchBoards()
   fetchBoardMembers()
   fetchAllUsers()
 })
-
 onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutside))
-
-watch(activeBoard, (newBoard) => {
-  if (newBoard) {
+watch(activeBoard, (board) => {
+  if (board) {
     fetchBoardMembers()
     fetchAllUsers()
+    renameBoardName.value = board.name
   }
 })
 
-// Create board
+// CRUD
 async function createBoard() {
   if (!newBoardName.value.trim()) return
   try {
@@ -353,8 +374,6 @@ async function createBoard() {
     console.error(err)
   }
 }
-
-// Delete board
 async function deleteBoard() {
   if (!activeBoard.value) return
   try {
@@ -362,6 +381,17 @@ async function deleteBoard() {
     boardStore.boards = boardStore.boards.filter((b) => b.id !== activeBoard.value?.id)
     showDeleteBoardModal.value = false
     router.push('/')
+  } catch (err) {
+    console.error(err)
+  }
+}
+async function renameBoard() {
+  if (!activeBoard.value || !renameBoardName.value.trim()) return
+  try {
+    const res = await api.patch(`/boards/${activeBoard.value.id}`, { name: renameBoardName.value })
+    const index = boardStore.boards.findIndex((b) => b.id === activeBoard.value?.id)
+    if (index !== -1) boardStore.boards[index]!.name = res.data.name
+    showRenameModal.value = false
   } catch (err) {
     console.error(err)
   }
