@@ -16,20 +16,22 @@ interface Task {
   boardOwnerId: number
 }
 
-const route = useRoute()
 const auth = useAuthStore()
-const boardId = Number(route.params.id)
-
-const tasks = ref<Task[]>([])
 
 const toDoTasks = computed(() => tasks.value.filter((t) => t.status === 'TO_DO'))
 const inProgressTasks = computed(() => tasks.value.filter((t) => t.status === 'IN_PROGRESS'))
 const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'COMPLETED'))
 
+const route = useRoute()
+const tasks = ref<Task[]>([])
+
+// Reactive boardId
+const boardId = computed(() => Number(route.params.id))
+
 // Fetch tasks for this board
-async function fetchTasks() {
+async function fetchTasks(id: number) {
   try {
-    const res = await api.get(`/boards/${boardId}/tasks`)
+    const res = await api.get(`/boards/${id}/tasks`)
     tasks.value = res.data.map((t: any) => ({
       id: t.id,
       content: t.content,
@@ -37,11 +39,21 @@ async function fetchTasks() {
       status: t.status,
       creatorId: t.creatorId,
       assignedMemberId: t.assignedMemberId,
+      boardOwnerId: t.boardOwnerId,
     }))
   } catch (err) {
     console.error(err)
   }
 }
+
+// Watch boardId changes
+watch(
+  boardId,
+  (newId) => {
+    fetchTasks(newId)
+  },
+  { immediate: true }, // fetch initially too
+)
 
 // Determine if current user can edit status
 function canEdit(task: Task) {
@@ -77,7 +89,7 @@ async function createTask(status: Task['status']) {
   if (!newTaskContent.value.trim()) return
 
   try {
-    const res = await api.post(`/tasks/board/${boardId}`, {
+    const res = await api.post(`/tasks/board/${boardId.value}`, {
       content: newTaskContent.value,
       status,
     })
