@@ -10,7 +10,6 @@ import com.example.demo.util.JwtUtil
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.*
 
-
 @RestController
 @RequestMapping("/boards")
 class BoardController(
@@ -19,7 +18,6 @@ class BoardController(
     private val userRepository: UserRepository,
     private val jwtUtil: JwtUtil
 ) {
-
     // Helper to get User from JWT "sub"
     private fun getCurrentUser(request: HttpServletRequest) =
         request.getHeader("Authorization")?.removePrefix("Bearer ")?.let { token ->
@@ -94,6 +92,4 @@ class BoardController(
             )
         }
     }
-
-
 }
