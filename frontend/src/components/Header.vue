@@ -18,7 +18,7 @@
           class="absolute left-0 mt-2 bg-white text-black rounded-md shadow-md w-48 z-50 overflow-hidden"
         >
           <div
-            v-for="board in boardStore.boards"
+            v-for="board in otherBoards"
             :key="board.id"
             @click="selectBoard(board.id)"
             class="px-4 py-2 hover:bg-gray-100 cursor-pointer truncate"
@@ -169,6 +169,11 @@ async function createBoard() {
     console.error(err)
   }
 }
+
+// inside <script setup lang="ts">
+const otherBoards = computed(() => {
+  return boardStore.boards.filter((b) => !activeBoard.value || b.id !== activeBoard.value.id)
+})
 
 // Open modal from dropdown
 function goCreateBoard() {
