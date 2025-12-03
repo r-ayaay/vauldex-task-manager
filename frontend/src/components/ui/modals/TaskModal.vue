@@ -2,7 +2,7 @@
   <div
     class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
-    <div class="modal-content bg-gray-800 text-white p-6 rounded-lg w-96">
+    <div class="modal-content bg-gray-800 text-white p-6 rounded-lg w-1/2">
       <!-- Task Header -->
       <h2 class="text-2xl font-semibold mb-4">Task Details</h2>
       <p class="mb-2"><strong>Content:</strong> {{ task.content }}</p>
@@ -12,19 +12,14 @@
         <label class="block mb-1">Assign Member:</label>
         <select
           v-model="localAssignedMemberId"
-          class="w-full bg-gray-700 text-white px-2 py-1 rounded mb-2"
+          @change="updateAssignedMember"
+          class="w-full bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
         >
           <option value="" disabled>Select member</option>
           <option v-for="member in boardMembers" :key="member.id" :value="member.id">
             {{ member.username }}
           </option>
         </select>
-        <button
-          @click="assignMember"
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
-        >
-          Assign
-        </button>
       </div>
 
       <!-- Status -->
@@ -142,12 +137,15 @@ const fetchComments = async () => {
 }
 
 // Assign member
-const assignMember = async () => {
-  if (!localAssignedMemberId.value) return
+// Replace assignMember function with this
+const updateAssignedMember = async () => {
+  if (localAssignedMemberId.value === null) return
   try {
-    console.log('Assigning member ID:', localAssignedMemberId.value)
-    await api.patch(`/tasks/${props.task.id}`, { assignedMemberId: localAssignedMemberId.value })
-    // Optionally show success feedback
+    await api.patch(`/tasks/${props.task.id}`, {
+      assignedMember: localAssignedMemberId.value.toString(),
+    })
+    // Optionally, update props.task.assignedMemberId so it stays in sync
+    props.task.assignedMemberId = localAssignedMemberId.value
   } catch (err) {
     console.error(err)
   }
