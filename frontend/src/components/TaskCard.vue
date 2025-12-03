@@ -20,7 +20,10 @@
         </select>
       </div>
       <div v-else>
-        <span class="px-2 py-1 rounded bg-gray-700 text-white">{{ localStatus }}</span>
+        <!-- Use the formatter here -->
+        <span class="px-2 py-1 rounded bg-gray-700 text-white">{{
+          formatStatus(localStatus)
+        }}</span>
       </div>
     </div>
   </div>
@@ -41,6 +44,16 @@ interface Props {
 const props = defineProps<Props>()
 const localStatus = ref(props.status)
 
+const formatStatus = (status: string) => {
+  const map: Record<string, string> = {
+    TO_DO: 'To Do',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+  }
+  return map[status] || status
+}
+
+// Keep localStatus in sync with prop changes
 watch(
   () => props.status,
   (newVal) => {
