@@ -32,5 +32,6 @@ fun Comment.toDTO(): CommentDTO = CommentDTO(
     taskId = this.task.id,
     userId = this.user.id,
     content = this.content,
-    createdAt = this.createdAt
+    createdAt = this.createdAt,
+    username = this.user.username
 )
