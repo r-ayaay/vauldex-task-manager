@@ -82,5 +82,12 @@ class BoardController(
         return boardService.getTasksForBoard(boardId).map { it.toDTO() }
     }
 
+    @GetMapping("/{boardId}/members")
+    fun getBoardMembers(@PathVariable boardId: Long, request: HttpServletRequest): List<Map<String, String>> {
+        val user = getCurrentUser(request)
+        val members = boardService.getMembersForBoard(boardId)
+        // Return only username
+        return members.map { mapOf("username" to it.username) }
+    }
 
 }

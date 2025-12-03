@@ -3,6 +3,7 @@ package com.example.demo.service
 import com.example.demo.entity.Board
 import com.example.demo.entity.BoardMember
 import com.example.demo.entity.Task
+import com.example.demo.entity.User
 import com.example.demo.repository.BoardMemberRepository
 import com.example.demo.repository.BoardRepository
 import com.example.demo.repository.TaskRepository
@@ -84,5 +85,12 @@ class BoardService(
             .orElseThrow { IllegalArgumentException("Board not found") }
         return taskRepository.findAllByBoardId(boardId)
     }
+
+    fun getMembersForBoard(boardId: Long): List<User> {
+        val board = boardRepository.findById(boardId)
+            .orElseThrow { IllegalArgumentException("Board not found") }
+        return boardMemberRepository.findAllByBoard(board).map { it.user }
+    }
+
 
 }
