@@ -12,7 +12,7 @@
         <select
           v-model="localStatus"
           @change="onUpdateStatus(localStatus)"
-          class="bg-gray-700 text-white px-2 py-1 rounded"
+          class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
         >
           <option value="TO_DO">To Do</option>
           <option value="IN_PROGRESS">In Progress</option>
