@@ -83,12 +83,17 @@ class BoardController(
     }
 
     @GetMapping("/{boardId}/members")
-    fun getBoardMembers(@PathVariable boardId: Long, request: HttpServletRequest): List<Map<String, String>> {
-
+    fun getBoardMembers(@PathVariable boardId: Long, request: HttpServletRequest): List<Map<String, Any>> {
         val user = getCurrentUser(request)
         val members = boardService.getMembersForBoard(boardId)
-        // Return only username
-        return members.map { mapOf("username" to it.username) }
+        // Return both id and username
+        return members.map { member ->
+            mapOf(
+                "id" to member.id,
+                "username" to member.username
+            )
+        }
     }
+
 
 }

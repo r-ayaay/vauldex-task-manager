@@ -65,6 +65,20 @@ class TaskService(
     }
 
     @Transactional
+    fun updateTaskAssignedMember(taskId: Long, assignedMemberId: Long): Task {
+        val task = taskRepository.findById(taskId)
+            .orElseThrow { IllegalArgumentException("Task not found") }
+
+        val user = userRepository.findById(assignedMemberId)
+            .orElseThrow { IllegalArgumentException("User not found") }
+
+        task.assignedMember = user
+
+        return task
+    }
+
+
+    @Transactional
     fun updateTaskStatus(taskId: Long, userId: Long, status: String): Task {
         val task = taskRepository.findById(taskId)
             .orElseThrow { IllegalArgumentException("Task not found") }

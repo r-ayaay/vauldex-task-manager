@@ -54,14 +54,21 @@ class TaskController(
         val user = getCurrentUser(request)
         val newContent = body["content"]
         val status = body["status"]
+        val assignedMember = body["assignedMemberId"]
 
         val task = when {
             newContent != null -> taskService.updateTaskContent(taskId, user.id, newContent)
             status != null -> taskService.updateTaskStatus(taskId, user.id, status)
+            assignedMember != null -> {
+                val assignedMemberId = assignedMember.toLongOrNull()
+                    ?: throw IllegalArgumentException("Invalid assignedMember id")
+                taskService.updateTaskAssignedMember(taskId, assignedMemberId)
+            }
             else -> throw IllegalArgumentException("Nothing to update")
         }
         return task.toDTO()
     }
+
 
     @DeleteMapping("/{taskId}")
     fun deleteTask(@PathVariable taskId: Long, request: HttpServletRequest) {
