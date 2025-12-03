@@ -5,7 +5,7 @@
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div class="flex justify-center items-center m-auto p-8 stroke-[#1C274C]">
           <div class="h-16"></div>
-          <h1 class="text-2xl font-semibold">[Project Name]</h1>
+          <h1 class="text-2xl font-semibold">TaskMan</h1>
         </div>
 
         <!-- Username -->

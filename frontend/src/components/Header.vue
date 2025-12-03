@@ -1,7 +1,9 @@
 <template>
   <header class="flex bg-[#1f1f21] items-center justify-between h-16 px-6 md:px-8 shadow-sm">
     <div class="flex items-center gap-3">
-      <h1 class="text-2xl font-semibold text-white pr-8">[Project Name]</h1>
+      <router-link to="/">
+        <h1 class="text-2xl font-semibold text-white pr-8 cursor-pointer">TaskMan</h1>
+      </router-link>
 
       <!-- Board dropdown -->
       <div v-if="activeBoard" class="relative" ref="boardDropdownRef">
@@ -10,7 +12,7 @@
           class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80 cursor-pointer"
         >
           {{ activeBoard.name }}
-          <span>▼</span>
+          <span><DownArrow /></span>
         </button>
 
         <div
@@ -44,7 +46,7 @@
           class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80 cursor-pointer"
         >
           Members
-          <span>▼</span>
+          <span><DownArrow /></span>
         </button>
 
         <div
@@ -161,6 +163,8 @@ import Button from './Button.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/boards'
 import api from '@/api/axios'
+
+import DownArrow from '@/components/ui/icons/down-arrow.vue'
 
 interface Board {
   id: number

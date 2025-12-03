@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue'
+import PlusIcon from './ui/icons/plus-icon.vue'
 
 interface Props {
   status: 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED'
@@ -26,13 +27,15 @@ watch(
 </script>
 
 <template>
-  <div class="w-full bg-[#232529] p-4 rounded-xl shadow-lg border-gray-600">
+  <div
+    class="w-full bg-[#232529] p-4 rounded-xl shadow-lg border-gray-600 cursor-pointer hover:scale-103 transition-all"
+  >
     <div
       v-if="props.addingStatus !== props.status"
-      class="cursor-pointer hover:scale-103 transition-all"
+      class=""
       @click="props.startAdding(props.status)"
     >
-      + Add a Card
+      <div class="flex gap-2"><PlusIcon /> Add a Card</div>
     </div>
 
     <div v-else class="flex flex-col gap-2">
