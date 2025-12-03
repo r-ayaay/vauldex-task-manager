@@ -1,7 +1,7 @@
 <template>
   <header class="flex bg-[#1f1f21] items-center justify-between h-16 px-6 md:px-8 shadow-sm">
     <div class="flex items-center gap-3">
-      <h1 class="text-2xl font-semibold text-white pr-8 border-r">[Project Name]</h1>
+      <h1 class="text-2xl font-semibold text-white pr-8">[Project Name]</h1>
 
       <!-- Board dropdown -->
       <div v-if="activeBoard" class="relative" ref="boardDropdownRef">
@@ -33,6 +33,39 @@
             class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-blue-600 font-medium"
           >
             + Create Board
+          </div>
+        </div>
+      </div>
+
+      <!-- Members dropdown -->
+      <div v-if="activeBoard" class="relative ml-4" ref="membersDropdownRef">
+        <button
+          @click="toggleMembersDropdown"
+          class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80 cursor-pointer"
+        >
+          Members
+          <span>▼</span>
+        </button>
+
+        <div
+          v-if="membersDropdownOpen"
+          class="absolute left-0 mt-2 bg-white text-black rounded-md shadow-md w-48 z-50 overflow-hidden"
+        >
+          <!-- Add member button only for owner -->
+          <div
+            v-if="isBoardOwner"
+            @click="openAddMemberModal"
+            class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-blue-600 font-medium"
+          >
+            + Add Member
+          </div>
+
+          <div
+            v-for="member in boardMembers"
+            :key="member.id"
+            class="px-4 py-2 hover:bg-gray-100 cursor-pointer truncate"
+          >
+            {{ member.username }}
           </div>
         </div>
       </div>
@@ -87,44 +120,147 @@
         </div>
       </div>
     </div>
+
+    <!-- Add Member Modal -->
+    <div
+      v-if="showMembersModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-[#1B2028] p-6 rounded-xl w-[350px]">
+        <h2 class="text-xl font-semibold mb-4">Add Member</h2>
+
+        <select v-model="selectedUserId" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-4">
+          <option value="null" disabled>Select user to add</option>
+          <option v-for="user in allUsers" :key="user.id" :value="user.id">
+            {{ user.username }}
+          </option>
+        </select>
+
+        <button
+          @click="addMember"
+          class="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white mb-2"
+        >
+          Add Member
+        </button>
+
+        <button
+          @click="showMembersModal = false"
+          class="w-full px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Button from './Button.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useBoardStore } from '@/stores/board'
+import { useBoardStore } from '@/stores/boards'
 import api from '@/api/axios'
+
+interface Board {
+  id: number
+  name: string
+  ownerId: number
+}
+interface User {
+  id: number
+  username: string
+}
 
 const auth = useAuthStore()
 const boardStore = useBoardStore()
 const router = useRouter()
 const route = useRoute()
-
 const props = defineProps<{ username: string; onLogout: () => void }>()
 
 // Dropdown state
 const boardDropdownOpen = ref(false)
 const boardDropdownRef = ref<HTMLElement | null>(null)
+const membersDropdownOpen = ref(false)
+const membersDropdownRef = ref<HTMLElement | null>(null)
 const userDropdownOpen = ref(false)
 const userDropdownRef = ref<HTMLElement | null>(null)
 
-// Create board modal state
+// Modals
 const showModal = ref(false)
 const newBoardName = ref('')
+const showMembersModal = ref(false)
+
+// Members
+const boardMembers = ref<User[]>([])
+const allUsers = ref<User[]>([])
+const selectedUserId = ref<number | null>(null)
 
 // Active board
 const activeBoard = computed(() => {
   if (route.name !== 'board') return null
-  const id = Number(route.params.id)
-  return boardStore.getById(id)
+  return boardStore.getById(Number(route.params.id))
 })
 
-// Toggle dropdowns
+// Owner check
+const isBoardOwner = computed(() => auth.user?.id === activeBoard.value?.ownerId)
+
+// Other boards
+const otherBoards = computed(() =>
+  boardStore.boards.filter((b) => !activeBoard.value || b.id !== activeBoard.value.id),
+)
+
+// Fetch members
+async function fetchBoardMembers() {
+  if (!activeBoard.value) return
+  try {
+    const res = await api.get<User[]>(`/boards/${activeBoard.value.id}/members`)
+    boardMembers.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Fetch all users for adding
+async function fetchAllUsers() {
+  if (!activeBoard.value) return
+  try {
+    const res = await api.get<User[]>('/users/available', {
+      params: { boardId: activeBoard.value.id },
+    })
+    allUsers.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Add member
+async function addMember() {
+  if (!activeBoard.value || !selectedUserId.value) return
+  try {
+    await api.post(`/boards/${activeBoard.value.id}/members`, {
+      memberId: selectedUserId.value,
+    })
+    await fetchBoardMembers()
+    selectedUserId.value = null
+    showMembersModal.value = false
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Open add member modal
+function openAddMemberModal() {
+  showMembersModal.value = true
+  membersDropdownOpen.value = false
+}
+
+// Dropdown toggles
 function toggleBoardDropdown() {
   boardDropdownOpen.value = !boardDropdownOpen.value
+}
+function toggleMembersDropdown() {
+  membersDropdownOpen.value = !membersDropdownOpen.value
 }
 function toggleUserDropdown() {
   userDropdownOpen.value = !userDropdownOpen.value
@@ -146,15 +282,26 @@ function logoutHandler() {
 function handleClickOutside(e: MouseEvent) {
   if (boardDropdownRef.value && !boardDropdownRef.value.contains(e.target as Node))
     boardDropdownOpen.value = false
+  if (membersDropdownRef.value && !membersDropdownRef.value.contains(e.target as Node))
+    membersDropdownOpen.value = false
   if (userDropdownRef.value && !userDropdownRef.value.contains(e.target as Node))
     userDropdownOpen.value = false
 }
+
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside)
   boardStore.fetchBoards()
+  fetchBoardMembers()
+  fetchAllUsers()
 })
-onBeforeUnmount(() => {
-  document.removeEventListener('mousedown', handleClickOutside)
+
+onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutside))
+
+watch(activeBoard, (newBoard) => {
+  if (newBoard) {
+    fetchBoardMembers()
+    fetchAllUsers()
+  }
 })
 
 // Create board
@@ -168,16 +315,5 @@ async function createBoard() {
   } catch (err) {
     console.error(err)
   }
-}
-
-// inside <script setup lang="ts">
-const otherBoards = computed(() => {
-  return boardStore.boards.filter((b) => !activeBoard.value || b.id !== activeBoard.value.id)
-})
-
-// Open modal from dropdown
-function goCreateBoard() {
-  showModal.value = true
-  boardDropdownOpen.value = false
 }
 </script>
