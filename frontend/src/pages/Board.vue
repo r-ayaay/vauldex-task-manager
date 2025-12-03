@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import TaskCard from '@/components/TaskCard.vue'
 import AddCardBox from '@/components/AddCardBox.vue'
@@ -17,19 +17,21 @@ interface Task {
 }
 
 const auth = useAuthStore()
-
-const toDoTasks = computed(() => tasks.value.filter((t) => t.status === 'TO_DO'))
-const inProgressTasks = computed(() => tasks.value.filter((t) => t.status === 'IN_PROGRESS'))
-const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'COMPLETED'))
-
-const route = useRoute()
 const tasks = ref<Task[]>([])
+const route = useRoute()
 
 // Reactive boardId
 const boardId = computed(() => Number(route.params.id))
 
-// Fetch tasks for this board
-async function fetchTasks(id: number) {
+// Computed filtered tasks
+const toDoTasks = computed(() => tasks.value.filter((t) => t.status === 'TO_DO'))
+const inProgressTasks = computed(() => tasks.value.filter((t) => t.status === 'IN_PROGRESS'))
+const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'COMPLETED'))
+
+// Fetch tasks for the current board
+async function fetchTasks() {
+  const id = boardId.value
+  if (!id) return // prevent undefined
   try {
     const res = await api.get(`/boards/${id}/tasks`)
     tasks.value = res.data.map((t: any) => ({
@@ -46,22 +48,14 @@ async function fetchTasks(id: number) {
   }
 }
 
-// Watch boardId changes
-watch(
-  boardId,
-  (newId) => {
-    fetchTasks(newId)
-  },
-  { immediate: true }, // fetch initially too
-)
+// Watch boardId and refetch tasks whenever it changes
+watch(boardId, fetchTasks, { immediate: true })
 
-// Determine if current user can edit status
+// Determine if current user can edit task status
 function canEdit(task: Task) {
   const userId = auth.user?.id
   return (
-    userId === task.creatorId ||
-    userId === task.assignedMemberId ||
-    auth.user?.id === task.boardOwnerId // you may need to fetch board owner from backend
+    userId === task.creatorId || userId === task.assignedMemberId || userId === task.boardOwnerId
   )
 }
 
@@ -76,7 +70,7 @@ async function updateTaskStatus(taskId: number, newStatus: string) {
   }
 }
 
-// State for "add card" inputs
+// State for adding tasks
 const addingStatus = ref<null | 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED'>(null)
 const newTaskContent = ref('')
 
@@ -85,11 +79,14 @@ function startAdding(status: Task['status']) {
   newTaskContent.value = ''
 }
 
+// Create a new task
 async function createTask(status: Task['status']) {
   if (!newTaskContent.value.trim()) return
+  const id = boardId.value
+  if (!id) return
 
   try {
-    const res = await api.post(`/tasks/board/${boardId.value}`, {
+    const res = await api.post(`/tasks/board/${id}`, {
       content: newTaskContent.value,
       status,
     })
@@ -111,18 +108,11 @@ async function createTask(status: Task['status']) {
   }
 }
 
-import { nextTick } from 'vue'
-
+// Input focus for AddCardBox
 const inputRef = ref<HTMLInputElement | null>(null)
-
 watch(addingStatus, async (val) => {
-  if (val !== null) {
-    await nextTick()
-    inputRef.value?.focus()
-  }
+  if (val !== null) (await nextTick(), inputRef.value?.focus())
 })
-
-onMounted(fetchTasks)
 </script>
 
 <template>
