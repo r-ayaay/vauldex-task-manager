@@ -3,45 +3,46 @@
     class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     @click="$emit('close')"
   >
-    <div class="modal-content bg-[#1b2128] text-white rounded-xl w-2/3 flex" @click.stop>
-      <div class="w-3/5 p-8">
+    <div class="modal-content bg-[#1b2128] text-white rounded-xl w-1/2" @click.stop>
+      <div class="p-8">
         <!-- Task Header -->
-        <h2 class="text-2xl font-semibold mb-8">Task Details</h2>
-        <p class="mb-2 text-2xl">{{ task.content }}</p>
+        <h2 class="text-2xl font-semibold mb-8">{{ task.content }}</h2>
 
-        <!-- Assigned Member -->
-        <div class="mt-8 mb-2 flex w-2/3 justify-between">
-          <label class="mb-1">Assigned Member:</label>
-          <select
-            v-model="localAssignedMemberId"
-            @change="updateAssignedMember"
-            class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
-            :disabled="!canAssignMember"
-          >
-            <option value="" disabled>Select member</option>
-            <option v-for="member in boardMembers" :key="member.id" :value="member.id">
-              {{ member.username }}
-            </option>
-          </select>
-        </div>
+        <div class="flex gap-4">
+          <!-- Status -->
+          <div class="flex justify-between items-center gap-2">
+            <label class="">Status:</label>
+            <select
+              v-model="localStatus"
+              @change="updateStatus"
+              class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
+              :disabled="!canEditStatus"
+            >
+              <option value="TO_DO">To Do</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
 
-        <!-- Status -->
-        <div class="mb-4 flex w-2/3 justify-between">
-          <label class="mb-1">Status:</label>
-          <select
-            v-model="localStatus"
-            @change="updateStatus"
-            class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
-            :disabled="!canEditStatus"
-          >
-            <option value="TO_DO">To Do</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
+          <!-- Assigned Member -->
+          <div class="flex justify-between items-center gap-2">
+            <label class="">Assigned Member:</label>
+            <select
+              v-model="localAssignedMemberId"
+              @change="updateAssignedMember"
+              class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
+              :disabled="!canAssignMember"
+            >
+              <option value="" disabled>Select member</option>
+              <option v-for="member in boardMembers" :key="member.id" :value="member.id">
+                {{ member.username }}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <div class="w-2/5 p-8 bg-[#232529] rounded-r-xl">
+      <div class="p-8">
         <!-- Comments -->
         <div class="mb-4">
           <h3 class="font-medium mb-2">Comments</h3>
