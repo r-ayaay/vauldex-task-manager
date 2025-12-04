@@ -13,6 +13,7 @@
         <select
           v-model="localStatus"
           @change.stop="onUpdateStatus(localStatus)"
+          @click.stop
           class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
         >
           <option value="TO_DO">To Do</option>
