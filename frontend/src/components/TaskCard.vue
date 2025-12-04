@@ -21,9 +21,6 @@
           <option value="COMPLETED">Completed</option>
         </select>
       </div>
-      <div v-else>
-        <span class="px-2 py-1 rounded bg-gray-700 text-white">{{ formattedStatus }}</span>
-      </div>
     </div>
   </div>
 </template>
