@@ -120,13 +120,13 @@
         <div class="flex justify-end gap-4">
           <button
             @click="showModal = false"
-            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
           >
             Cancel
           </button>
           <button
             @click="createBoard"
-            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
           >
             Create
           </button>
@@ -150,13 +150,13 @@
         <div class="flex justify-end gap-4">
           <button
             @click="showRenameModal = false"
-            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
           >
             Cancel
           </button>
           <button
             @click="renameBoard"
-            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
           >
             Rename
           </button>
@@ -181,14 +181,14 @@
 
         <button
           @click="addMember"
-          class="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white mb-2"
+          class="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white mb-2 cursor-pointer"
         >
           Add Member
         </button>
 
         <button
           @click="showMembersModal = false"
-          class="w-full px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+          class="w-full px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
         >
           Cancel
         </button>
@@ -209,13 +209,13 @@
         <div class="flex justify-end gap-4">
           <button
             @click="showDeleteBoardModal = false"
-            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
           >
             Cancel
           </button>
           <button
             @click="deleteBoard"
-            class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+            class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white cursor-pointer"
           >
             Delete
           </button>
