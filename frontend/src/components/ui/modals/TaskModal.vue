@@ -52,6 +52,7 @@
               type="text"
               placeholder="Add a comment..."
               class="flex-1 px-2 py-1 rounded bg-gray-700 text-white outline-none"
+              @keyup.enter.exact="addComment"
             />
             <button
               @click="addComment"
