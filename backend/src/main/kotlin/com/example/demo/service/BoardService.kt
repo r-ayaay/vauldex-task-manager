@@ -11,12 +11,16 @@ import com.example.demo.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import com.example.demo.ws.SocketHandler
+import com.example.demo.ws.WebSocketEvent
+
 @Service
 class BoardService(
     private val boardRepository: BoardRepository,
     private val boardMemberRepository: BoardMemberRepository,
     private val userRepository: UserRepository,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val socketHandler: SocketHandler
 ) {
 
     fun createBoard(ownerId: Long, name: String): Board {
@@ -27,6 +31,19 @@ class BoardService(
         val newBoard = boardRepository.save(board)
 
         addMember(newBoard.id,ownerId,ownerId)
+
+        val event = WebSocketEvent(
+            type = "BOARD_CREATED",
+            payload = mapOf(
+                "id" to newBoard.id,
+                "name" to newBoard.name,
+                "ownerId" to newBoard.owner.id
+            )
+        )
+
+        println("this is event: \n\n$event")
+        socketHandler.broadcast(event)
+
         return newBoard
     }
 
@@ -37,6 +54,15 @@ class BoardService(
 
         if (board.owner.id != userId) throw IllegalAccessException("Only owner can rename board")
         board.name = newName
+
+        val event = WebSocketEvent(
+            type = "BOARD_UPDATED",
+            payload = mapOf(
+                "id" to board.id,
+                "name" to board.name
+            )
+        )
+
         return board
     }
 
@@ -46,6 +72,19 @@ class BoardService(
             .orElseThrow { IllegalArgumentException("Board not found") }
         if (board.owner.id != userId) throw IllegalAccessException("Only owner can delete board")
         boardRepository.delete(board)
+
+        val event = WebSocketEvent(
+            type = "BOARD_DELETED",
+            payload = mapOf(
+                "id" to board.id
+            )
+        )
+        socketHandler.broadcast(event)
+
+        println("testing testing\n\n")
+
+        socketHandler.broadcast(event)
+
     }
 
     @Transactional

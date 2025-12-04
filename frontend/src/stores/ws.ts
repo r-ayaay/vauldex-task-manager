@@ -17,7 +17,8 @@ export const useWebSocketStore = defineStore('ws', {
 
       this.socket.onmessage = (event) => {
         const data = JSON.parse(event.data)
-        this.events.push(data)
+        console.log('Received WS event:', data)
+        this.events = [...this.events, data]
       }
 
       this.socket.onclose = () => {

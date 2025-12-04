@@ -63,6 +63,26 @@ import { useRouter } from 'vue-router'
 import BoardCard from '@/components/BoardCard.vue'
 import api from '@/api/axios' // your axios instance
 
+import { watch } from 'vue'
+import { useWebSocketStore } from '@/stores/ws'
+
+const wsStore = useWebSocketStore()
+
+watch(
+  () => wsStore.events,
+  (events) => {
+    const latest = events[events.length - 1]
+    if (
+      latest?.type === 'BOARD_CREATED' ||
+      latest?.type === 'BOARD_UPDATED' ||
+      latest?.type === 'BOARD_DELETED'
+    ) {
+      console.log('Detected board change event:', latest.type)
+      fetchBoards()
+    }
+  },
+)
+
 type Board = {
   id: number
   name: string
