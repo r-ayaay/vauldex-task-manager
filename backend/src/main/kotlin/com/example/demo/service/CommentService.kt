@@ -8,12 +8,16 @@ import com.example.demo.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import com.example.demo.ws.SocketHandler
+import com.example.demo.ws.WebSocketEvent
+
 @Service
 class CommentService(
     private val commentRepository: CommentRepository,
     private val taskRepository: TaskRepository,
     private val boardMemberRepository: BoardMemberRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val socketHandler: SocketHandler
 ) {
 
     fun addComment(taskId: Long, userId: Long, content: String): Comment {
@@ -25,16 +29,32 @@ class CommentService(
         }
 
         val user = userRepository.findById(userId)
-            .orElseThrow { IllegalArgumentException("User not found") } // unwrap Optional
+            .orElseThrow { IllegalArgumentException("User not found") }
 
         val comment = Comment(
             task = task,
-            user = user,  // now it's a User object, not Optional<User>
+            user = user,
             content = content
         )
 
-        return commentRepository.save(comment)
+        val savedComment = commentRepository.save(comment)
+
+        // WebSocket event
+        val event = WebSocketEvent(
+            type = "COMMENT_CREATED",
+            payload = mapOf(
+                "id" to savedComment.id,
+                "taskId" to task.id,
+                "userId" to user.id,
+                "content" to savedComment.content,
+                "createdAt" to savedComment.createdAt.toString()
+            )
+        )
+        socketHandler.broadcast(event)
+
+        return savedComment
     }
+
 
 
     fun getCommentsForTask(taskId: Long): List<Comment> {
