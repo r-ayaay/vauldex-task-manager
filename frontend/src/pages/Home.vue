@@ -40,14 +40,14 @@
         <div class="flex justify-end gap-4">
           <button
             @click="showModal = false"
-            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white"
+            class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
           >
             Cancel
           </button>
 
           <button
             @click="createBoard"
-            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
           >
             Create
           </button>
