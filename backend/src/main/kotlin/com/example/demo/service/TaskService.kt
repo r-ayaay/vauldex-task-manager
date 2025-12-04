@@ -170,6 +170,7 @@ class TaskService(
             )
         )
 
+        socketHandler.broadcast(event)
         taskRepository.delete(task)
     }
 

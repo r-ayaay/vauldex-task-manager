@@ -175,6 +175,15 @@ function closeTaskModal() {
   showTaskModal.value = false
   selectedTask.value = null
 }
+
+function removeTask(taskId: number) {
+  tasks.value = tasks.value.filter((t) => t.id !== taskId)
+
+  // If the deleted task is currently open in the modal, close it
+  if (selectedTask.value?.id === taskId) {
+    closeTaskModal()
+  }
+}
 </script>
 
 <template>
@@ -264,6 +273,7 @@ function closeTaskModal() {
       :can-edit-status="selectedTask ? canEdit(selectedTask) : false"
       :board-members="boardMembers"
       @close="closeTaskModal"
+      @delete="removeTask"
     />
   </div>
 </template>

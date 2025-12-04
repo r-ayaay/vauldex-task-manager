@@ -48,6 +48,17 @@
               </option>
             </select>
           </div>
+
+          <div>
+            <div v-if="canAssignMember">
+              <button
+                @click="deleteTask"
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -117,6 +128,7 @@ interface CommentDTO {
 const props = defineProps<{ task: Task; canEditStatus: boolean; boardMembers: User[] }>()
 const emit = defineEmits({
   close: null,
+  delete: null,
 })
 
 const auth = useAuthStore()
@@ -186,6 +198,17 @@ const updateStatus = async () => {
   try {
     await api.patch(`/tasks/${props.task.id}`, { status: localStatus.value })
     // Optionally show success feedback
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const deleteTask = async () => {
+  try {
+    await api.delete(`/tasks/${props.task.id}`)
+
+    emit('delete', props.task.id) // notify parent
+    emit('close') // close modal
   } catch (err) {
     console.error(err)
   }
