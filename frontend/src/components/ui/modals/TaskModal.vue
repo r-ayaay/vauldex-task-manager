@@ -10,12 +10,13 @@
         <p class="mb-2 text-2xl">{{ task.content }}</p>
 
         <!-- Assigned Member -->
-        <div v-if="canAssignMember" class="mt-8 mb-2 flex w-2/3 justify-between">
+        <div class="mt-8 mb-2 flex w-2/3 justify-between">
           <label class="mb-1">Assigned Member:</label>
           <select
             v-model="localAssignedMemberId"
             @change="updateAssignedMember"
             class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
+            :disabled="!canAssignMember"
           >
             <option value="" disabled>Select member</option>
             <option v-for="member in boardMembers" :key="member.id" :value="member.id">
