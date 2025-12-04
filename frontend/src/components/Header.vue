@@ -98,12 +98,12 @@
           @click="showDeleteBoardModal = true"
           classNames="flex w-full items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-100 transition-colors"
           v-if="activeBoard && isBoardOwner"
-        />
+        ></Button>
         <Button
           label="Logout"
           @click="logoutHandler"
           classNames="flex w-full items-center gap-2 px-4 py-2 text-[#1C274C] hover:bg-[#f0f2f8] focus:bg-[#e3e7f3] transition-colors stroke-[#1C274C]"
-        />
+        ></Button>
       </div>
     </div>
 
@@ -176,7 +176,7 @@
         <h2 class="text-xl font-semibold mb-4">Add Member</h2>
 
         <select v-model="selectedUserId" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-4">
-          <option value="null" disabled>Select user to add</option>
+          <option :value="null" disabled>Select user to add</option>
           <option v-for="user in allUsers" :key="user.id" :value="user.id">
             {{ user.username }}
           </option>
@@ -239,11 +239,6 @@ import api from '@/api/axios'
 import DownArrow from '@/components/ui/icons/down-arrow.vue'
 import PenIcon from './ui/icons/pen-icon.vue'
 
-interface Board {
-  id: number
-  name: string
-  ownerId: number
-}
 interface User {
   id: number
   username: string
@@ -253,7 +248,7 @@ const auth = useAuthStore()
 const boardStore = useBoardStore()
 const router = useRouter()
 const route = useRoute()
-const props = defineProps<{ username: string; onLogout: () => void }>()
+const { username, onLogout } = defineProps<{ username: string; onLogout: () => void }>()
 
 // Dropdowns
 const boardDropdownOpen = ref(false)
@@ -339,7 +334,7 @@ function selectBoard(id: number) {
 }
 function logoutHandler() {
   userDropdownOpen.value = false
-  props.onLogout()
+  onLogout()
 }
 function handleClickOutside(e: MouseEvent) {
   if (boardDropdownRef.value && !boardDropdownRef.value.contains(e.target as Node))
