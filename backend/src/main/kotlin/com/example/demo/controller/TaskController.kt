@@ -54,7 +54,7 @@ class TaskController(
         val user = getCurrentUser(request)
         val newContent = body["content"]
         val status = body["status"]
-        val assignedMember = body["assignedMemberId"]
+        val assignedMember = body["assignedMember"]
 
         val task = when {
             newContent != null -> taskService.updateTaskContent(taskId, user.id, newContent)
