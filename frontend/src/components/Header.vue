@@ -1,12 +1,16 @@
 <template>
   <header class="flex bg-[#1f1f21] items-center justify-between h-16 px-6 md:px-8 shadow-sm">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2">
       <router-link to="/">
         <h1 class="text-2xl font-semibold text-white pr-8 cursor-pointer">TaskMan</h1>
       </router-link>
 
       <!-- Rename Board Button -->
-      <div v-if="activeBoard && isBoardOwner" class="cursor-pointer" @click="openRenameModal">
+      <div
+        v-if="activeBoard && isBoardOwner"
+        class="cursor-pointer stroke-[#4c5056] hover:stroke-white"
+        @click="openRenameModal"
+      >
         <PenIcon />
       </div>
 
@@ -14,7 +18,7 @@
       <div v-if="activeBoard" class="relative" ref="boardDropdownRef">
         <button
           @click="toggleBoardDropdown"
-          class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80 cursor-pointer"
+          class="flex items-center gap-1 text-lg pr-4 font-medium text-white hover:opacity-80 cursor-pointer"
         >
           {{ activeBoard.name }}
           <span><DownArrow /></span>
@@ -48,7 +52,7 @@
       <div v-if="activeBoard" class="relative ml-4" ref="membersDropdownRef">
         <button
           @click="toggleMembersDropdown"
-          class="flex items-center gap-1 text-lg px-4 font-medium text-white hover:opacity-80 cursor-pointer"
+          class="flex items-center gap-1 text-lg font-medium text-white hover:opacity-80 cursor-pointer"
         >
           Members
           <span><DownArrow /></span>
