@@ -23,7 +23,6 @@ class SocketHandler : TextWebSocketHandler() {
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         println("Received message: ${message.payload}")
 
-        // Broadcast to all other clients
         for (s in sessions) {
             if (s.isOpen && s.id != session.id) {
                 s.sendMessage(TextMessage(message.payload))

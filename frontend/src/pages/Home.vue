@@ -77,7 +77,6 @@ watch(
       latest?.type === 'BOARD_UPDATED' ||
       latest?.type === 'BOARD_DELETED'
     ) {
-      console.log('Detected board change event:', latest.type)
       fetchBoards()
     }
   },

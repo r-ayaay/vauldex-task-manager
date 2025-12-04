@@ -41,7 +41,6 @@ class BoardService(
             )
         )
 
-        println("this is event: \n\n$event")
         socketHandler.broadcast(event)
 
         return newBoard
@@ -79,12 +78,8 @@ class BoardService(
                 "id" to board.id
             )
         )
-        socketHandler.broadcast(event)
-
-        println("testing testing\n\n")
 
         socketHandler.broadcast(event)
-
     }
 
     @Transactional

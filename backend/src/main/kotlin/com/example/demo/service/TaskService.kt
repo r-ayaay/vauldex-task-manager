@@ -105,8 +105,6 @@ class TaskService(
 
         task.assignedMember = user
 
-        println("\n\nASSIGNING MEMBER TO USER : $user\n\n")
-
         // Broadcast WebSocket event
         val event = WebSocketEvent(
             type = "TASK_UPDATED",

@@ -161,7 +161,6 @@ watch(
   (events) => {
     const latest = events[events.length - 1]
     if (latest?.type === 'COMMENT_CREATED') {
-      console.log('Detected board change event:', latest.type)
       fetchComments()
     }
   },

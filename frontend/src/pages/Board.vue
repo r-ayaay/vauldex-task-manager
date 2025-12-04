@@ -41,7 +41,6 @@ async function fetchTasks() {
   if (!id) return
   try {
     const res = await api.get(`/boards/${id}/tasks`)
-    console.log('Fetched Tasks:', res.data)
     tasks.value = res.data.map((t: any) => ({
       id: t.id,
       content: t.content,
@@ -63,7 +62,6 @@ async function fetchBoardMembers() {
   try {
     const res = await api.get<User[]>(`/boards/${id}/members`)
     boardMembers.value = res.data
-    console.log('Board Members:', boardMembers.value)
   } catch (err) {
     console.error(err)
   }
@@ -82,7 +80,6 @@ watch(
       latest?.type === 'TASK_UPDATED' ||
       latest?.type === 'TASK_DELETED'
     ) {
-      console.log('Detected board change event:', latest.type)
       fetchTasks()
     }
   },
