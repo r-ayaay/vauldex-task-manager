@@ -1,6 +1,9 @@
 <template>
-  <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="modal-content bg-[#1b2128] text-white rounded-xl w-2/3 flex">
+  <div
+    class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    @click="$emit('close')"
+  >
+    <div class="modal-content bg-[#1b2128] text-white rounded-xl w-2/3 flex" @click.stop>
       <div class="w-3/5 p-8">
         <!-- Task Header -->
         <h2 class="text-2xl font-semibold mb-8">Task Details</h2>

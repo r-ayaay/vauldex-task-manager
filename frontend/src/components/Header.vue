@@ -108,8 +108,12 @@
     </div>
 
     <!-- Create Board Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
+    <div
+      v-if="showModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click="(e) => closeOnOutsideClick(e, () => (showModal = false))"
+    >
+      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]" @click.stop>
         <h2 class="text-xl font-semibold mb-4">Create New Board</h2>
         <input
           v-model="newBoardName"
@@ -138,8 +142,9 @@
     <div
       v-if="showRenameModal && activeBoard"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click="(e) => closeOnOutsideClick(e, () => (showRenameModal = false))"
     >
-      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
+      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]" @click.stop>
         <h2 class="text-xl font-semibold mb-4">Rename Board</h2>
         <input
           v-model="renameBoardName"
@@ -168,8 +173,9 @@
     <div
       v-if="showMembersModal"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click="(e) => closeOnOutsideClick(e, () => (showMembersModal = false))"
     >
-      <div class="bg-[#1B2028] p-6 rounded-xl w-[350px]">
+      <div class="bg-[#1B2028] p-6 rounded-xl w-[350px]" @click.stop>
         <h2 class="text-xl font-semibold mb-4">Add Member</h2>
 
         <select v-model="selectedUserId" class="w-full p-2 rounded-lg bg-gray-800 text-white mb-4">
@@ -199,8 +205,9 @@
     <div
       v-if="showDeleteBoardModal && activeBoard"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click="(e) => closeOnOutsideClick(e, () => (showDeleteBoardModal = false))"
     >
-      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
+      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]" @click.stop>
         <h2 class="text-xl font-semibold mb-4">Delete Board</h2>
         <p class="mb-6">
           Are you sure you want to delete <strong>{{ activeBoard.name }}</strong
@@ -390,6 +397,12 @@ async function renameBoard() {
     showRenameModal.value = false
   } catch (err) {
     console.error(err)
+  }
+}
+
+function closeOnOutsideClick(e: MouseEvent, closeFn: () => void) {
+  if (e.target === e.currentTarget) {
+    closeFn()
   }
 }
 </script>

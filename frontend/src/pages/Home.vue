@@ -25,8 +25,9 @@
     <div
       v-if="showModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      @click="(e) => closeOnOutsideClick(e, () => (showModal = false))"
     >
-      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
+      <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]" @click.stop>
         <h2 class="text-xl font-semibold mb-4">Create New Board</h2>
 
         <input
@@ -107,5 +108,11 @@ async function createBoard() {
 
 function goToBoard(id: number) {
   router.push(`/board/${id}`)
+}
+
+function closeOnOutsideClick(e: MouseEvent, closeFn: () => void) {
+  if (e.target === e.currentTarget) {
+    closeFn()
+  }
 }
 </script>
