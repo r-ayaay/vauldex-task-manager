@@ -10,12 +10,16 @@ import com.example.demo.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import com.example.demo.ws.SocketHandler
+import com.example.demo.ws.WebSocketEvent
+
 @Service
 class TaskService(
     private val taskRepository: TaskRepository,
     private val boardRepository: BoardRepository,
     private val userRepository: UserRepository,
-    private val boardMemberRepository: BoardMemberRepository
+    private val boardMemberRepository: BoardMemberRepository,
+    private val socketHandler: SocketHandler
 ) {
 
     fun createTask(
@@ -47,6 +51,21 @@ class TaskService(
             status = statusString
         )
 
+        // WebSocket event
+        val event = WebSocketEvent(
+            type = "TASK_CREATED",
+            payload = mapOf(
+                "id" to task.id,
+                "content" to task.content,
+                "boardId" to board.id,
+                "creatorId" to creator.id,
+                "assignedMemberId" to assignedMember?.id,
+                "status" to task.status
+            )
+        )
+
+        socketHandler.broadcast(event)
+
         return taskRepository.save(task)
     }
 
@@ -61,6 +80,18 @@ class TaskService(
         }
 
         task.content = newContent
+
+        // WebSocket event
+        val event = WebSocketEvent(
+            type = "TASK_UPDATED",
+            payload = mapOf(
+                "id" to task.id,
+                "content" to task.content,
+                "boardId" to task.board.id
+            )
+        )
+        socketHandler.broadcast(event)
+
         return task
     }
 
@@ -73,6 +104,22 @@ class TaskService(
             .orElseThrow { IllegalArgumentException("User not found") }
 
         task.assignedMember = user
+
+        println("\n\nASSIGNING MEMBER TO USER : $user\n\n")
+
+        // Broadcast WebSocket event
+        val event = WebSocketEvent(
+            type = "TASK_UPDATED",
+            payload = mapOf(
+                "id" to task.id,
+                "content" to task.content,
+                "boardId" to task.board.id,
+                "creatorId" to task.creator.id,
+                "assignedMemberId" to task.assignedMember?.id,
+                "status" to task.status
+            )
+        )
+        socketHandler.broadcast(event)
 
         return task
     }
@@ -87,7 +134,23 @@ class TaskService(
             throw IllegalAccessException("Not allowed to update task status")
         }
 
+
         task.status = status
+
+        // Broadcast WebSocket event
+        val event = WebSocketEvent(
+            type = "TASK_UPDATED",
+            payload = mapOf(
+                "id" to task.id,
+                "content" to task.content,
+                "boardId" to task.board.id,
+                "creatorId" to task.creator.id,
+                "assignedMemberId" to task.assignedMember?.id,
+                "status" to task.status
+            )
+        )
+        socketHandler.broadcast(event)
+
         return task
     }
 
@@ -99,6 +162,15 @@ class TaskService(
         if (task.creator.id != userId && task.board.owner.id != userId) {
             throw IllegalAccessException("Only creator or board owner can delete task")
         }
+
+        // WebSocket event
+        val event = WebSocketEvent(
+            type = "TASK_DELETED",
+            payload = mapOf(
+                "id" to task.id,
+                "boardId" to task.board.id
+            )
+        )
 
         taskRepository.delete(task)
     }

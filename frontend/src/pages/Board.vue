@@ -69,6 +69,25 @@ async function fetchBoardMembers() {
   }
 }
 
+import { useWebSocketStore } from '@/stores/ws'
+
+const wsStore = useWebSocketStore()
+
+watch(
+  () => wsStore.events,
+  (events) => {
+    const latest = events[events.length - 1]
+    if (
+      latest?.type === 'TASK_CREATED' ||
+      latest?.type === 'TASK_UPDATED' ||
+      latest?.type === 'TASK_DELETED'
+    ) {
+      console.log('Detected board change event:', latest.type)
+      fetchTasks()
+    }
+  },
+)
+
 // Watch boardId to refetch tasks and members
 watch(
   boardId,
