@@ -6,7 +6,16 @@
     <div class="modal-content bg-[#1b2128] text-white rounded-xl w-1/2" @click.stop>
       <div class="p-8">
         <!-- Task Header -->
-        <h2 class="text-2xl font-semibold mb-8">{{ task.content }}</h2>
+        <div class="flex justify-between">
+          <h2 class="text-2xl font-semibold mb-8">{{ task.content }}</h2>
+          <!-- Close button -->
+          <button
+            @click="$emit('close')"
+            class="bg-red-600 hover:bg-red-700 text-white h-8 w-8 rounded cursor-pointer"
+          >
+            X
+          </button>
+        </div>
 
         <div class="flex gap-4">
           <!-- Status -->
@@ -67,14 +76,6 @@
             </button>
           </div>
         </div>
-
-        <!-- Close button -->
-        <button
-          @click="$emit('close')"
-          class="bg-red-600 hover:bg-red-700 text-white py-2 rounded w-full cursor-pointer"
-        >
-          Close
-        </button>
       </div>
     </div>
   </div>
