@@ -191,6 +191,16 @@ function removeTask(taskId: number) {
     <!-- TO_DO -->
     <div class="p-8 overflow-y-auto">
       <h2 class="text-xl font-semibold mb-4">To Do</h2>
+      <div class="mb-4">
+        <AddCardBox
+          :status="'TO_DO'"
+          :addingStatus="addingStatus"
+          v-model="newTaskContent"
+          :startAdding="startAdding"
+          :createTask="createTask"
+          :cancelAdding="cancelAdding"
+        />
+      </div>
       <div class="flex flex-col gap-4">
         <TaskCard
           v-for="task in toDoTasks"
@@ -203,8 +213,15 @@ function removeTask(taskId: number) {
           :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus as Task['status'])"
           @click="openTaskModal(task)"
         />
+      </div>
+    </div>
+
+    <!-- IN_PROGRESS -->
+    <div class="border-x border-[#4e5056] p-8 overflow-y-auto">
+      <h2 class="text-xl font-semibold mb-4">In Progress</h2>
+      <div class="mb-4">
         <AddCardBox
-          :status="'TO_DO'"
+          :status="'IN_PROGRESS'"
           :addingStatus="addingStatus"
           v-model="newTaskContent"
           :startAdding="startAdding"
@@ -212,11 +229,6 @@ function removeTask(taskId: number) {
           :cancelAdding="cancelAdding"
         />
       </div>
-    </div>
-
-    <!-- IN_PROGRESS -->
-    <div class="border-x border-[#4e5056] p-8 overflow-y-auto">
-      <h2 class="text-xl font-semibold mb-4">In Progress</h2>
       <div class="flex flex-col gap-4">
         <TaskCard
           v-for="task in inProgressTasks"
@@ -229,8 +241,15 @@ function removeTask(taskId: number) {
           :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus as Task['status'])"
           @click="openTaskModal(task)"
         />
+      </div>
+    </div>
+
+    <!-- COMPLETED -->
+    <div class="p-8 overflow-y-auto">
+      <h2 class="text-xl font-semibold mb-4">Completed</h2>
+      <div class="mb-4">
         <AddCardBox
-          :status="'IN_PROGRESS'"
+          :status="'COMPLETED'"
           :addingStatus="addingStatus"
           v-model="newTaskContent"
           :startAdding="startAdding"
@@ -238,11 +257,6 @@ function removeTask(taskId: number) {
           :cancelAdding="cancelAdding"
         />
       </div>
-    </div>
-
-    <!-- COMPLETED -->
-    <div class="p-8 overflow-y-auto">
-      <h2 class="text-xl font-semibold mb-4">Completed</h2>
       <div class="flex flex-col gap-4">
         <TaskCard
           v-for="task in completedTasks"
@@ -254,14 +268,6 @@ function removeTask(taskId: number) {
           :canEditStatus="canEdit(task)"
           :onUpdateStatus="(newStatus) => updateTaskStatus(task.id, newStatus as Task['status'])"
           @click="openTaskModal(task)"
-        />
-        <AddCardBox
-          :status="'COMPLETED'"
-          :addingStatus="addingStatus"
-          v-model="newTaskContent"
-          :startAdding="startAdding"
-          :createTask="createTask"
-          :cancelAdding="cancelAdding"
         />
       </div>
     </div>
