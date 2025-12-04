@@ -4,7 +4,7 @@
     @click="$emit('close')"
   >
     <div class="modal-content bg-[#1b2128] text-white rounded-xl w-1/2" @click.stop>
-      <div class="p-8">
+      <div class="px-8 pt-8 pb-2">
         <!-- Task Header -->
         <div class="flex justify-between">
           <h2 class="text-2xl font-semibold mb-8">{{ task.content }}</h2>
@@ -51,16 +51,11 @@
         </div>
       </div>
 
-      <div class="p-8">
+      <div class="px-8 py-2">
         <!-- Comments -->
-        <div class="mb-4">
+        <div class="mb-4 border-t border-gray-600 pt-4">
           <h3 class="font-medium mb-2">Comments</h3>
-          <ul class="max-h-48 overflow-y-auto mb-2">
-            <li v-for="c in comments" :key="c.id" class="mb-1 border-b border-gray-600 pb-1">
-              <strong>{{ c.username }}:</strong> {{ c.content }}
-            </li>
-          </ul>
-          <div class="flex gap-2">
+          <div class="flex gap-2 mb-4">
             <input
               v-model="commentText"
               type="text"
@@ -75,6 +70,17 @@
               Comment
             </button>
           </div>
+          <ul class="max-h-80 overflow-y-auto mb-2">
+            <li v-for="c in comments" :key="c.id" class="mb-4 bg-[#171a1b] p-2 rounded">
+              <div>
+                <strong>{{ c.username }} </strong>
+                <span class="text-gray-400 text-sm font-light">
+                  - {{ new Date(c.createdAt).toLocaleString() }}
+                </span>
+              </div>
+              {{ c.content }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -105,6 +111,7 @@ interface CommentDTO {
   id: number
   content: string
   username: string
+  createdAt: string
 }
 
 const props = defineProps<{ task: Task; canEditStatus: boolean; boardMembers: User[] }>()
@@ -139,7 +146,7 @@ const formatStatus = (status: string) => {
 const fetchComments = async () => {
   try {
     const res = await api.get<CommentDTO[]>(`/tasks/${props.task.id}/comments`)
-    comments.value = res.data
+    comments.value = res.data.reverse()
   } catch (err) {
     console.error(err)
   }
