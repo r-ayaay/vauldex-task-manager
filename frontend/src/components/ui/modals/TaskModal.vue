@@ -1,8 +1,6 @@
 <template>
-  <div
-    class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div class="modal-content bg-gray-800 text-white rounded-lg w-2/3 flex">
+  <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="modal-content bg-[#1b2128] text-white rounded-xl w-2/3 flex">
       <div class="w-3/5 p-8">
         <!-- Task Header -->
         <h2 class="text-2xl font-semibold mb-8">Task Details</h2>
@@ -39,7 +37,7 @@
         </div>
       </div>
 
-      <div class="w-2/5 p-8 bg-[#232529] rounded-r-lg">
+      <div class="w-2/5 p-8 bg-[#232529] rounded-r-xl">
         <!-- Comments -->
         <div class="mb-4">
           <h3 class="font-medium mb-2">Comments</h3>

@@ -523,6 +523,10 @@
     border-top-right-radius: var(--radius-lg);
     border-bottom-right-radius: var(--radius-lg);
   }
+  .rounded-r-xl {
+    border-top-right-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
+  }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
@@ -584,6 +588,9 @@
   .bg-\[\#1a1c1f\] {
     background-color: #1a1c1f;
   }
+  .bg-\[\#1b2128\] {
+    background-color: #1b2128;
+  }
   .bg-\[\#1f1f21\] {
     background-color: #1f1f21;
   }
@@ -598,6 +605,12 @@
   }
   .bg-black {
     background-color: var(--color-black);
+  }
+  .bg-black\/50 {
+    background-color: color-mix(in srgb, #000 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
+    }
   }
   .bg-blue-600 {
     background-color: var(--color-blue-600);
