@@ -108,10 +108,7 @@
     </div>
 
     <!-- Create Board Modal -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
+    <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
         <h2 class="text-xl font-semibold mb-4">Create New Board</h2>
         <input
@@ -140,7 +137,7 @@
     <!-- Rename Board Modal -->
     <div
       v-if="showRenameModal && activeBoard"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
         <h2 class="text-xl font-semibold mb-4">Rename Board</h2>
@@ -170,7 +167,7 @@
     <!-- Add Member Modal -->
     <div
       v-if="showMembersModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div class="bg-[#1B2028] p-6 rounded-xl w-[350px]">
         <h2 class="text-xl font-semibold mb-4">Add Member</h2>
@@ -201,7 +198,7 @@
     <!-- Delete Board Modal -->
     <div
       v-if="showDeleteBoardModal && activeBoard"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]">
         <h2 class="text-xl font-semibold mb-4">Delete Board</h2>
