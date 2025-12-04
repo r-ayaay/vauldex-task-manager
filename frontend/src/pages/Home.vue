@@ -24,7 +24,7 @@
     <!-- Modal -->
     <div
       v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center"
       @click="(e) => closeOnOutsideClick(e, () => (showModal = false))"
     >
       <div class="bg-[#1B2028] p-8 rounded-xl w-[350px]" @click.stop>
