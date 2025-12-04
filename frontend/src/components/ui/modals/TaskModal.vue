@@ -2,72 +2,76 @@
   <div
     class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
-    <div class="modal-content bg-gray-800 text-white p-6 rounded-lg w-1/2">
-      <!-- Task Header -->
-      <h2 class="text-2xl font-semibold mb-4">Task Details</h2>
-      <p class="mb-2"><strong>Content:</strong> {{ task.content }}</p>
+    <div class="modal-content bg-gray-800 text-white rounded-lg w-2/3 flex">
+      <div class="w-3/5 p-8">
+        <!-- Task Header -->
+        <h2 class="text-2xl font-semibold mb-8">Task Details</h2>
+        <p class="mb-2 text-2xl">{{ task.content }}</p>
 
-      <!-- Assigned Member -->
-      <div v-if="canAssignMember" class="mb-4">
-        <label class="block mb-1">Assign Member:</label>
-        <select
-          v-model="localAssignedMemberId"
-          @change="updateAssignedMember"
-          class="w-full bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
-        >
-          <option value="" disabled>Select member</option>
-          <option v-for="member in boardMembers" :key="member.id" :value="member.id">
-            {{ member.username }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Status -->
-      <div class="mb-4">
-        <label class="block mb-1">Status:</label>
-        <select
-          v-model="localStatus"
-          @change="updateStatus"
-          class="w-full bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
-          :disabled="!canEditStatus"
-        >
-          <option value="TO_DO">To Do</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="COMPLETED">Completed</option>
-        </select>
-      </div>
-
-      <!-- Comments -->
-      <div class="mb-4">
-        <h3 class="font-medium mb-2">Comments</h3>
-        <ul class="max-h-48 overflow-y-auto mb-2">
-          <li v-for="c in comments" :key="c.id" class="mb-1 border-b border-gray-600 pb-1">
-            <strong>{{ c.username }}:</strong> {{ c.content }}
-          </li>
-        </ul>
-        <div class="flex gap-2">
-          <input
-            v-model="commentText"
-            type="text"
-            placeholder="Add a comment..."
-            class="flex-1 px-2 py-1 rounded bg-gray-700 text-white outline-none"
-          />
-          <button
-            @click="addComment"
-            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white"
+        <!-- Assigned Member -->
+        <div v-if="canAssignMember" class="mt-8 mb-2 flex w-2/3 justify-between">
+          <label class="mb-1">Assigned Member:</label>
+          <select
+            v-model="localAssignedMemberId"
+            @change="updateAssignedMember"
+            class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
           >
-            Comment
-          </button>
+            <option value="" disabled>Select member</option>
+            <option v-for="member in boardMembers" :key="member.id" :value="member.id">
+              {{ member.username }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-4 flex w-2/3 justify-between">
+          <label class="mb-1">Status:</label>
+          <select
+            v-model="localStatus"
+            @change="updateStatus"
+            class="bg-gray-700 text-white px-2 py-1 rounded cursor-pointer"
+            :disabled="!canEditStatus"
+          >
+            <option value="TO_DO">To Do</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
         </div>
       </div>
 
-      <!-- Close button -->
-      <button
-        @click="$emit('close')"
-        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
-      >
-        Close
-      </button>
+      <div class="w-2/5 p-8 bg-[#232529] rounded-r-lg">
+        <!-- Comments -->
+        <div class="mb-4">
+          <h3 class="font-medium mb-2">Comments</h3>
+          <ul class="max-h-48 overflow-y-auto mb-2">
+            <li v-for="c in comments" :key="c.id" class="mb-1 border-b border-gray-600 pb-1">
+              <strong>{{ c.username }}:</strong> {{ c.content }}
+            </li>
+          </ul>
+          <div class="flex gap-2">
+            <input
+              v-model="commentText"
+              type="text"
+              placeholder="Add a comment..."
+              class="flex-1 px-2 py-1 rounded bg-gray-700 text-white outline-none"
+            />
+            <button
+              @click="addComment"
+              class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white cursor-pointer"
+            >
+              Comment
+            </button>
+          </div>
+        </div>
+
+        <!-- Close button -->
+        <button
+          @click="$emit('close')"
+          class="bg-red-600 hover:bg-red-700 text-white py-2 rounded w-full cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
     </div>
   </div>
 </template>
